@@ -4,6 +4,9 @@ on:
   push:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -33,3 +36,13 @@ jobs:
         with:
           name: CarBass-apk
           path: CarBass/app/build/outputs/apk/debug/*.apk
+
+      - name: Save APK to repo
+        run: |
+          mkdir -p release
+          cp CarBass/app/build/outputs/apk/debug/app-debug.apk release/CarBass.apk
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add release/CarBass.apk
+          git commit -m "Add built APK [skip ci]" || exit 0
+          git push
